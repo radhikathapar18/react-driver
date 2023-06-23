@@ -1,49 +1,63 @@
-import React from "react";
-import { Box, Typography, useTheme } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, useTheme, IconButton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-// import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-// import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-// import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
-import Header from "../../components/Header";
-import { IconButton } from "@mui/material";
+
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import Header from "../../components/Header";
 
-
-const Team = ({ userDetails }) => {
+const Team = ({ userDetails, updateTeamData }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    // Retrieve data from local storage on component mount
+    const storedData = localStorage.getItem("teamData");
+    if (storedData) {
+      setData(JSON.parse(storedData));
+    } else {
+      setData(userDetails); // Set initial data from the prop if no data is found in local storage
+    }
+  }, [userDetails]);
+
+  useEffect(() => {
+    // Update local storage when data changes
+    localStorage.setItem("teamData", JSON.stringify(data));
+  }, [data]);
+
+  useEffect(() => {
+    // Update data when userDetails prop changes
+    setData(userDetails);
+  }, [userDetails]);
+
+  const handleDelete = (id) => {
+    const updatedData = data.filter((item) => item.id !== id);
+    setData(updatedData);
+  };
+
+  const handleEdit = (id) => {
+    console.log("Edit:", id);
+    // Implement edit functionality here
+  };
+
   const columns = [
     { field: "id", headerName: "ID", flex: 1 },
-    { field: "firstName", headerName: "First Name", flex: 1 },
-    { field: "lastName", headerName: "Last Name", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    { field: "age", headerName: "Age", flex: 1 },
     { field: "email", headerName: "Email", flex: 1 },
-    { field: "contact", headerName: "Contact Number", flex: 1 },
-    { field: "address1", headerName: "Address 1", flex: 1 },
-    { field: "address2", headerName: "Address 2", flex: 1 },
-    { field: "city", headerName: "City", flex: 1 },
-    { field: "state", headerName: "State", flex: 1 },
-    { field: "postalCode", headerName: "Postal Code", flex: 1 },
     {
       field: "actions",
       headerName: "Actions",
       flex: 1,
       renderCell: ({ row }) => {
-        const handleDelete = () => {
-          console.log("Delete:", row.id);
-        };
-  
-        const handleEdit = () => {
-          console.log("Edit:", row.id);
-        };
-  
         return (
           <Box display="flex" justifyContent="center">
-            <IconButton onClick={handleDelete}>
+            <IconButton onClick={() => handleDelete(row.id)}>
               <DeleteIcon />
             </IconButton>
-            <IconButton onClick={handleEdit}>
+            <IconButton onClick={() => handleEdit(row.id)}>
               <EditIcon />
             </IconButton>
           </Box>
@@ -54,7 +68,7 @@ const Team = ({ userDetails }) => {
 
   return (
     <Box m="20px">
-      <Header title="TEAM" subtitle="Managing the Team Members" />
+      {/* <Header title="TEAM" subtitle="Managing the Team Members" /> */}
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -83,9 +97,16 @@ const Team = ({ userDetails }) => {
       >
         <DataGrid
           checkboxSelection
-          rows={userDetails}
+          rows={data}
           columns={columns}
           pageSize={10}
+          onEditCellChangeCommitted={(params) => {
+            const { id, field, value } = params;
+            const updatedData = data.map((item) =>
+              item.id === id ? { ...item, [field]: value } : item
+            );
+            setData(updatedData);
+          }}
         />
       </Box>
     </Box>
