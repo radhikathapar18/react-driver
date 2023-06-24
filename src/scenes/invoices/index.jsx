@@ -1,7 +1,17 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { useState } from "react";
+import {
+  Box,
+  Typography,
+  useTheme,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Grid,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { mockDataInvoices } from "../../data/mockData";
 import Header from "../../components/Header";
 
 const Invoices = () => {
@@ -21,30 +31,61 @@ const Invoices = () => {
       flex: 1,
     },
     {
-      field: "email",
-      headerName: "Email",
-      flex: 1,
-    },
-    {
-      field: "cost",
-      headerName: "Cost",
-      flex: 1,
-      renderCell: (params) => (
-        <Typography color={colors.greenAccent[500]}>
-          ${params.row.cost}
-        </Typography>
-      ),
-    },
-    {
       field: "date",
       headerName: "Date",
       flex: 1,
     },
   ];
 
+  const [openForm, setOpenForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    date: "",
+  });
+
+  const handleFormOpen = () => {
+    setOpenForm(true);
+  };
+
+  const handleFormClose = () => {
+    setOpenForm(false);
+  };
+
+  const handleInputChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleFormSubmit = () => {
+    const newCustomer = {
+      id: customers.length + 1, // Assign a unique id to each row
+      name: formData.name,
+      phone: formData.phone,
+      date: formData.date,
+    };
+
+    // Update the table data with the new customer
+    setCustomers((prevCustomers) => [...prevCustomers, newCustomer]);
+
+    // Reset the form data
+    setFormData({
+      name: "",
+      phone: "",
+      date: "",
+    });
+
+    // Close the form
+    setOpenForm(false);
+  };
+
+  const [customers, setCustomers] = useState([]);
+
   return (
-    <Box m="20px">
-      <Header title="INVOICES" subtitle="List of Invoice Balances" />
+    <Box m={2}>
+      <Header title="Customer Details" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -74,8 +115,64 @@ const Invoices = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataInvoices} columns={columns} />
+        <Box mb={2}>
+          <Button variant="contained" color="primary" onClick={handleFormOpen}>
+            Add Customer
+          </Button>
+        </Box>
+        <DataGrid
+          checkboxSelection
+          rows={customers}
+          columns={columns}
+          getRowId={(row) => row.id} // Provide a custom id getter
+        />
       </Box>
+
+      <Dialog open={openForm} onClose={handleFormClose}>
+        <DialogTitle>Add Customer</DialogTitle>
+        <DialogContent>
+          <Box>
+            <TextField
+              label="Name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              size="small"
+            />
+            <TextField
+              label="Phone Number"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              size="small"
+            />
+            <TextField
+              label="Date"
+              name="date"
+              value={formData.date}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              size="small"
+            />
+          </Box>
+        </DialogContent>
+        <Box display="flex" justifyContent="flex-end" p={2}>
+          <Button variant="contained" color="primary" onClick={handleFormSubmit}>
+            Add
+          </Button>
+          <Button variant="outlined" onClick={handleFormClose}>
+            Cancel
+          </Button>
+        </Box>
+      </Dialog>
     </Box>
   );
 };

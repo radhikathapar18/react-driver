@@ -13,22 +13,19 @@ const Team = ({ userDetails, updateTeamData }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    // Retrieve data from local storage on component mount
     const storedData = localStorage.getItem("teamData");
     if (storedData) {
       setData(JSON.parse(storedData));
     } else {
-      setData(userDetails); // Set initial data from the prop if no data is found in local storage
+      setData(userDetails); 
     }
   }, [userDetails]);
 
   useEffect(() => {
-    // Update local storage when data changes
     localStorage.setItem("teamData", JSON.stringify(data));
   }, [data]);
 
   useEffect(() => {
-    // Update data when userDetails prop changes
     setData(userDetails);
   }, [userDetails]);
 
@@ -39,7 +36,7 @@ const Team = ({ userDetails, updateTeamData }) => {
 
   const handleEdit = (id) => {
     console.log("Edit:", id);
-    // Implement edit functionality here
+    
   };
 
   const columns = [

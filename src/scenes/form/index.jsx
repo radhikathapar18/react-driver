@@ -1,4 +1,3 @@
-// Form.js
 import React, { useState } from "react";
 import { v4 as uuid } from "uuid";
 import {
@@ -56,6 +55,7 @@ const Form = () => {
         sx={{
           float: isNonMobile ? "right" : "none",
           mb: isNonMobile ? 0 : 2,
+          mt: 2,
         }}
       >
         Add Member

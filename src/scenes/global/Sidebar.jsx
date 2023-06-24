@@ -140,12 +140,19 @@ const Sidebar = () => {
               {/* Data */}
             </Typography>
             <Item
-              title="Driver Detail"
+              title="Driver "
               to="/form"
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> 
+             <Item
+            title="Customer "
+            to="/invoices"
+            icon={<ReceiptOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
             <Item
               title="Contacts Information"
               to="/contacts"
@@ -153,13 +160,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Invoices Balances"
-              to="/invoices"
-              icon={<ReceiptOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+          
 
             <Typography
               variant="h6"
